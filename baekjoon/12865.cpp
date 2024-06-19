@@ -4,15 +4,19 @@
  * greedy는 안 됨 -> 최상의 경우의 수가 존재하지 않음.
  * 만약 최상의 가치를 지니는 것만 선택할 경우 -> 여러개의 합으로 더 나은 결과를 만들 수 있음
  * bruteforce하게 풀면 고르는 경우 / 안 고르는 경우가 발생할 수 있으니 2^N이 존재한다.
- * 
+ * 현재 물품을 넣고 / 안 넣고 두가지 방법이 존재함
+ * max(현재 물품을 넣었을 때 + (총 용량 - 현재 물품 무게), 현재 물품을 안 넣었을 때 + 직전의 가치))
+ * 답을 구하려는 것은 "가치의 최대값"인데, dp로 구할 때 고려해야할 것은 가치의 최대값 뿐만 아니라 
+ * "무게의 상한선" 도 고려해야 한다.
+ * "무게"를 바탕으로 정렬을 먼저 한 다음 처리해야 하나..?
+ * 결국 이차원으로 dp를 만든 다음, 무게 / 어떤 것을 선택했을 때를 생각해야 한다.
 */
 #include <iostream>
 #include <algorithm>
 
 using namespace std;
 typedef long long ll;
-# define total 100'001
-ll value[total];
+ll value[100][100]; //kg무게 / 어떤 것을 선택할 때
 
 int main()
 {
@@ -23,13 +27,10 @@ int main()
 	for (int i = 0; i< N; i++)
 	{
 		cin >> W[i] >> V[i];
-		if (value[i] < W[i])
-			value[i] = W[i];
 	}
-	//dp
-	for (int i = 0; i <= K; i++)
+	for (int i = 0; i < K; i++)
 	{
-		//max(현재, 현재 - 물품의 가치)
+		
 	}
 
 }
