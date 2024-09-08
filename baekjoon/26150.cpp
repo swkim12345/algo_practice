@@ -7,6 +7,7 @@
 #include <vector>
 #include <queue>
 #include <string>
+#include <cctype>
 typedef long long ll;
 using namespace std;
 
@@ -14,7 +15,7 @@ struct item {
   string s;
   ll I, D;
   item(string s, ll I, ll D) : s(s), I(I), D(D) {}
-  bool operator<(const item i) const { return D < i.D; }
+  bool operator<(const item i) const { return I > i.I; }
 };
 priority_queue<item> N;
 
@@ -27,7 +28,7 @@ void init() {
 
 string index(struct item i)
 {
-  return string(1, i.s.at(i.D));
+  return string(1, toupper(i.s.at(i.D - 1)));
 }
 
 int main() {
@@ -35,12 +36,8 @@ int main() {
   string str;
   init();
   cin >> n;
-  for (int i = 0; i < n; i++) {
-    getline(cin, str);
-    
-    cin >> str;
-    cout << str;
-    cin >> i >> d;
+  for (int j = 0; j < n; j++) {
+    cin >> str >> i >> d;
     N.push(item(str, i, d));
   }
   str = "";
