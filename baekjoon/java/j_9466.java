@@ -27,6 +27,10 @@
  * 
  * 4. 모든 visited 노드를 돌면서 -1인 노드를 answer에 추가함. answer 출력.
  * 
+ * 사이클이 하나짜리일 때
+ * 
+ * 오답노트
+ * 자기 자신으로 돌아올 경우 그 다음 사이클이 아닌 노드가 체크되는 문제가 있음.
  */
 import java.util.*;
 import java.io.*;
@@ -35,23 +39,28 @@ public class j_9466 {
     static int[] visited = new int[100001]; // 방문 노드, -1 : 사이클 아님, 0 : 방문하지 않음, 1 ~ : 사이클
     static int[] array = new int[100001]; // 다음 노드가 저장되어 있음.
 
-    static void rewind(Deque<Integer> deq, int updateNum) {
-        int tmp;
+    static void rewind(Stack<Integer> st, int updateNum) {
+        int tmp, start;
 
         // -1이 아니라 사이클이 완성된 경우
         if (updateNum != -1) {
-            while (deq.size() > 0) { // 종료조건 1
-                tmp = deq.poll();
+            start = array[st.peek()]; //사이클의 시작 지점
+            if (start == st.peek()) {
+                st.pop(); //자기 자신 제거(사이클)
+                return;
+            }
+            while (st.size() > 0) { // 종료조건 1
+                tmp = st.pop();
                 
-                if (visited[tmp] == updateNum) { // 사이클 완성시 - 종료조건 2
+                if (tmp == start) { // 사이클 완성시 - 종료조건 2
                     break;
                 } else {
                     visited[tmp] = updateNum;
                 }
             }
         } else { // -1이라 남은 값을 모두 사이클이 아닌 경우
-            while(deq.size() > 0) {
-                tmp = deq.poll();
+            while(st.size() > 0) {
+                tmp = st.pop();
 
                 visited[tmp] =  updateNum;
             }
@@ -59,29 +68,25 @@ public class j_9466 {
     }
 
     static void dfs(int idx, int groupNumber, int N) {
-        Deque<Integer> deq = new ArrayDeque<>();
+        Stack<Integer> st = new Stack<>();
         int tmp, next;
         
-        deq.add(idx);
+        st.add(idx);
         visited[idx] = groupNumber;
         // dfs를 돌림.
         while (true) {
-            tmp = deq.peek();
+            tmp = st.peek();
             next = array[tmp];
             // 0일 경우
             if (visited[next] == 0) {
-                deq.add(next);
+                st.add(next);
                 visited[next] = groupNumber;
-                System.out.printf("before : %d, after : %d\n", tmp, next);
-            } else if (visited[next] == -1) { // -1일 경우
-                rewind(deq, -1);
-                break;
             } else if (visited[next] == groupNumber) { // 사이클 완성시
-                rewind(deq, groupNumber);
-                rewind(deq, -1);
+                rewind(st, groupNumber);
+                rewind(st, -1);
                 break;
-            } else { //다른 사이클 - 사이클 완성되지 않음.
-                rewind(deq, -1);
+            } else { //다른 사이클 혹은 -1 - 사이클 완성되지 않음.
+                rewind(st, -1);
                 break;
             }
         }
@@ -96,7 +101,6 @@ public class j_9466 {
 
         for (int i = 1; i <= N; i++) {
             if (visited[i] == -1) answer += 1; // 사이클이 아닌 경우
-            System.out.printf("%d ", visited[i]);
         }
         System.out.println(answer);
     }
