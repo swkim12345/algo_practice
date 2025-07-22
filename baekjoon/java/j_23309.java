@@ -20,26 +20,27 @@
  * - 각각 previous, next를 가지고 있다가 처리
  * 
  * 엣지케이스
- * 1일때 발생할까요?
+ * 1일때 발생할까요? 자기 자신만 잘 가리키면 발생하지 않음.
  * 
  * 초기화
  * 역을 활성화하고, 이전, 이후 역과 처음과 마지막 역을 연결해준다.
  * 
- * 시뮬레이션
- * connect
- * close
+ * 
+ * 시간 초과 해결법
+ * 1. BufferedWriter bw 사용, 기존 print 사용하지 않음.
  */
 
 import java.io.BufferedReader;
+import java.io.BufferedWriter;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.io.OutputStreamWriter;
 import java.util.StringTokenizer;
 
 public class j_23309 {
     static Node[] list = new Node[1000001];
-    class Node {
+    static class Node {
         public int previous, next;
-        public boolean isOpen;
     }
 
     static void init(int N, StringTokenizer st) {
@@ -49,10 +50,9 @@ public class j_23309 {
         // 노드를 점차 늘려난다고 가정함.
         now = Integer.parseInt(st.nextToken());
         start = previous = now;
+        list[now] = new Node();
         list[now].previous = previous;
         list[now].next = now;
-        list[now].isOpen = true;
-        System.out.println(now);
 
         for (int i = 1; i < N; i++) {
             /*
@@ -62,9 +62,9 @@ public class j_23309 {
              */
             previous = now;
             now = Integer.parseInt(st.nextToken());
+            list[now] = new Node();
             list[previous].next = now;
-            list[now].previous = now;
-            list[now].isOpen = true;
+            list[now].previous = previous;
         }
         // 마지막과 현재 노드 연결 필요
         list[start].previous = now;
@@ -88,7 +88,7 @@ public class j_23309 {
             ret = previous;
         }
         // 새로 연결
-        list[nw].isOpen = true;
+        list[nw] = new Node();
         list[nw].next = next;
         list[nw].previous = previous;
 
@@ -113,9 +113,6 @@ public class j_23309 {
             ret = list[target].previous;
             previous = list[ret].previous;
         }
-        // 삭제
-        list[ret].isOpen = false;
-
         // 갱신
         list[previous].next = next;
         list[next].previous = previous;
@@ -126,6 +123,7 @@ public class j_23309 {
         StringTokenizer st;
         String action;
         StringBuilder sb = new StringBuilder();
+        BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(System.out));
         int a, b = 0;
 
         for (int i = 0; i < M; i++) {
@@ -155,8 +153,10 @@ public class j_23309 {
                 }
                 default :
             }
-
         }
+        bw.write(sb.toString());
+        bw.flush();
+        bw.close();
     }
 
     public static void main(String[] args) throws IOException {
