@@ -119,7 +119,7 @@ public class j_23309 {
         return ret;
     }
 
-    static void query(int M, BufferedReader br) throws IOException {
+    static void solution(int M, BufferedReader br) throws IOException {
         StringTokenizer st;
         String action;
         StringBuilder sb = new StringBuilder();
@@ -169,6 +169,6 @@ public class j_23309 {
 
         st = new StringTokenizer(br.readLine());
         init(N, st);
-        query(M, br);
+        solution(M, br);
     }
 }
