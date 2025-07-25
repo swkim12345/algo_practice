@@ -31,6 +31,7 @@ public class j_1863 {
     public static void main(String[] args) throws IOException{
         BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
         StringTokenizer st;
+        @SuppressWarnings("unused")
         int N, x, y, cnt = 0;
 
         N = Integer.parseInt(br.readLine());
