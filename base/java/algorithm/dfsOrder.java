@@ -5,7 +5,7 @@ package base.java.algorithm;
  * 순회 방식을 작성한 알고리즘
  * Node가 다음과 같이 주어진다고 가정할 때 다음과 같이 순회
  */
-public class dfsOrder {
+public class DfsOrder {
     static class Node {
         int value;
         Node left;

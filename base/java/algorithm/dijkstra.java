@@ -11,7 +11,7 @@ package base.java.algorithm;
 
 import java.util.*;
 
-public class dijkstra {
+public class Dijkstra {
     static class Edge {
         int to, weight;
         Edge(int to, int weight) {

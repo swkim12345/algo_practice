@@ -9,7 +9,7 @@ import java.util.*;
  * 만약, value와 같은 중복값 중 가장 마지막 값을 반환하려면 -1해서 반환해야 함.
  */
 
-public class upperbound {
+public class Upperbound {
     static int upperbound(List<Integer> list, int value) {
         int max = list.size();
         int min = 0;

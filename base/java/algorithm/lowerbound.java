@@ -8,7 +8,7 @@ package base.java.algorithm;
 import java.io.*;
 import java.util.*;
 
-public class lowerbound {
+public class Lowerbound {
     static int lowerbound(List<Integer> list, int value) {
         int max = list.size();
         int min = 0;
