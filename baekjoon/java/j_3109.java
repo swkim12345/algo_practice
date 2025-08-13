@@ -15,6 +15,10 @@
  * 
  * 주의
  * 첫번째, 마지막 열은 항상 비워져 있음.
+ * 
+ * 오답노트
+ * 방문한 노드에서 dfs를 한 결과에서 더이상 도달하지 못했다면 -> 더이상 그 노드에서 탐색할 필요가 없음!
+ * 따라서 visitied 를 롤백할 필요가 없습니다
  */
 
 import java.io.*;
@@ -29,38 +33,39 @@ public class j_3109 {
     static final int[] dx = {1, 1, 1};
     static final int[] dy = {-1, 0, 1};
 
-    static boolean isInside(int x, int y, int R, int C) {
+    static boolean isInside(int x, int y, int C, int R) {
         return (x >= 0 && x < C && y >= 0 && y < R);
     }
 
-    static boolean isNotBuilding(int x, int y) {
-        return arr[y][x] != BUILDING;
+    static boolean isEmptyWay(int x, int y) {
+        return arr[y][x] == EMPTY;
     }
 
-    static int solution(int R, int C) {
-        int ans = 0, nx, ny;
-
-        // 처음부터 시작
-        for (int y = 0; y < R; y++) {
-            arr[y][0] = VISITED; // 첫번째 열에는 무조건 빌딩같은 건 없음.
+    static boolean dfs(int x, int y, int C, int R) {
+        int nx, ny;
+        // 종료조건 : x 좌표가 C - 1에 도달
+        if (x == C - 1) {
+            return true;
         }
 
-        // 점마다 엣지를 그리디하게 선택
-        for (int x = 0; x < C - 1; x++) {
-            for (int y = 0; y < R; y++) {
-                // 만약 visited 아니면 continue
-                if (arr[y][x] == VISITED) continue;
-
-                // 3방향으로 이동처리
-                for (int i = 0; i < 3; i++) {
-                    nx = x + dx[i];
-                    ny = y + dy[i];
-
-                    if (isInside(nx, ny, R, C) && isNotBuilding(nx, ny)) {
-                        arr[ny][nx] = VISITED;
-                    }
-                }
+        for (int i = 0; i < 3; i++) {
+            nx = x + dx[i];
+            ny = y + dy[i];
+            if (isInside(nx, ny, C, R) && isEmptyWay(nx, ny)) {
+                arr[ny][nx] = VISITED;
+                if (dfs(nx, ny, C, R)) return true;
+                // arr[ny][nx] = EMPTY;
             }
+        }
+        return false;
+    }
+
+    static int solution(int C, int R) {
+        int ans = 0;
+
+        // 점마다 엣지를 그리디하게 선택
+        for (int i = 0; i < R; i++) {
+            dfs(0, i, C, R);
         }
 
         // 마지막에 카운팅
@@ -78,7 +83,7 @@ public class j_3109 {
         StringTokenizer st = new StringTokenizer(br.readLine());
         String str;
 
-        int R = Integer.parseInt(st.nextToken());
+        int R = Integer.parseInt(st.nextToken()); // y 좌표 길이
         int C = Integer.parseInt(st.nextToken());
 
         arr = new char[R][C];
@@ -90,6 +95,6 @@ public class j_3109 {
             }
         }
 
-        System.out.println(solution(R, C));
+        System.out.println(solution(C, R));
     }    
 }
