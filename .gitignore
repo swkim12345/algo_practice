@@ -445,5 +445,8 @@ MigrationBackup/
 # swea pro 문제
 sw_academy/pro/*
 
+# swea res
+sw_academy/java/res/*
+
 
 # End of https://www.toptal.com/developers/gitignore/api/c++,vs,visualstudiocode,macos
