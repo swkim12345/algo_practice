@@ -448,5 +448,7 @@ sw_academy/pro/*
 # swea res
 sw_academy/java/res/*
 
+launch.json
+.vscode
 
 # End of https://www.toptal.com/developers/gitignore/api/c++,vs,visualstudiocode,macos
