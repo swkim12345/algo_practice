@@ -446,7 +446,7 @@ MigrationBackup/
 sw_academy/pro/*
 
 # swea res
-sw_academy/java/res/*
+res
 
 launch.json
 .vscode

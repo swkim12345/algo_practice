@@ -52,7 +52,7 @@ $script:AnyCommit = $false
 
 function Get-ProblemNumber {
     param([string]$Path)
-    if ($Path -match "j_(\d+)\.java$") { return $matches[1] }
+    if ($Path -match "j_(\w+)\.java$") { return $matches[1] }
     return $null
 }
 
