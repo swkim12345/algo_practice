@@ -20,17 +20,17 @@ import java.util.*;
 
 public class UnionFind {
     // arr에는 부모 노드의 값을 가지고 있음.
-    static int find(List<List<Integer>> graph, List<Integer> arr, int start) {
+    static int find(List<Integer> arr, int start) {
         // 종료조건 : 자기 자신이 부모인 경우
         if (start == arr.get(start)) return start;
 
         // path compression
-        return arr.set(start, find(graph, arr, arr.get(start)));
+        return arr.set(start, find(arr, arr.get(start)));
     }
 
-    static void union(List<List<Integer>> graph, List<Integer> arr, int a, int b) {
-        a = find(graph, arr, a);
-        b = find(graph, arr, b);
+    static void union(List<Integer> arr, int a, int b) {
+        a = find(arr, a);
+        b = find(arr, b);
 
         arr.set(b, a); //a에 b의 트리 합성
     }
@@ -38,9 +38,9 @@ public class UnionFind {
     // 트리의 높이가 중요할 경우 - rank 배열을 이용해 구현
     // 트리의 높이가 낮은 트리를 높은 트리에 삽입 -> 높이를 바탕으로 root 삽입 변경
     static int[] rank;
-    static void union2(List<List<Integer>> graph, List<Integer> arr, int a, int b) {
-        a = find(graph, arr, a);
-        b = find(graph, arr, b);
+    static void union2(List<Integer> arr, int a, int b) {
+        a = find(arr, a);
+        b = find(arr, b);
 
         if (a == b) return;
 
@@ -58,9 +58,9 @@ public class UnionFind {
     // 노드의 개수를 카운팅해야 할 경우 - nodeCound를 이용해 더함.
 
     static int[] nodeCount;
-    static int union3(List<List<Integer>> graph, List<Integer> arr, int a, int b) {
-        a = find(graph, arr, a);
-        b = find(graph, arr, b);
+    static int union3(List<Integer> arr, int a, int b) {
+        a = find(arr, a);
+        b = find(arr, b);
 
         if (a != b) {
             arr.set(b, a);

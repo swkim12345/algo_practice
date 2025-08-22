@@ -16,13 +16,27 @@ import java.io.*;
 import java.util.*;
 
 public class j_20040 {
-    static int node[];
+    static int[] graph;
     StringBuilder sb;
 
-    static boolean solution(int one, int two) {
-        
+    // 약간 변형된 union - 부모가 같으면 사이클 완성
+    static boolean union(int a, int b) {
+        a = find(a);
+        b = find(b);
 
-        return true;
+        if (a == b) return true;
+        graph[b] = a;
+        return false;
+    }
+
+    static int find(int node) {
+        if (node == graph[node]) return node;
+
+        return graph[node] = find(graph[node]);
+    }
+
+    static boolean solution(int one, int two) {
+        return union(one, two);
     }
 
     public static void main(String[] args) throws IOException {
@@ -36,9 +50,9 @@ public class j_20040 {
         n = Integer.parseInt(st.nextToken());
         m = Integer.parseInt(st.nextToken());
 
-        node = new int[n];
+        graph = new int[n];
         for (int i = 0; i < n; i++) {
-            node[i] = i;
+            graph[i] = i;
         }
         
         for (int i = 1; i <= m; i++) {
