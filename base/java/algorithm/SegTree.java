@@ -1,8 +1,9 @@
 package base.java.algorithm;
 /*
  * 세그먼트 트리
- * 여러 개의 데이터가 연속적으로 존재할 때 특정 범위의 데이터의 합을 구하는 방법
+ * 여러 개의 데이터가 연속적으로 존재할 때 특정 범위의 데이터의 대표값(여기선 합)을 구하는 자료구조
  * 데이터의 합을 가장 빠르고 간단하게 구할 수 있는 자료구조
+ * 합이 아닌 최대, 최소 값도 빠르게 구할 수 있다. (build를 바꿔야 함.)
  * 
  * 합을 구하는 방법
  * 1. 단순 구현 - 각 값을 그때그때 합쳐주는 것 - 쿼리마다 O(N)
@@ -12,6 +13,7 @@ package base.java.algorithm;
  * 추가로 쿼리가 들어와서 값을 갱신할 경우
  * 구간합을 이용한 풀이로는 풀리지 않는다.
  * 따라서, 쿼리가 들어올 때 업데이트해줄 수 있는 자료구조가 필요한데, 그게 세그먼트 트리이다.
+ * 
  * 자료구조
  * 1. segtree를 저장할 배열, 들어온 값을 저장할 배열
  * 1-1. segtree 크기 : N개보다 큰 가장 가까운 N의 제곱수의 2배, 기본적으론 4 * N 만큼의 사이즈를 할당해주면 됨.
@@ -21,7 +23,7 @@ package base.java.algorithm;
  * 재귀를 이용해 세그먼트 트리를 빌드한다.
  * build할 때 원 배열에 접근해서 빌드한 다음, 이후에는 원 배열에 접근하지 않는다.
  * 
- * sum
+ * query
  * 
  * update
  * 
@@ -34,71 +36,119 @@ package base.java.algorithm;
  * https://m.blog.naver.com/ndb796/221282210534
  */
 public class SegTree {
-    static int[] tree;
-    static int[] arr;
-    
-    // node - segtree 의 인덱스값
-    static int build(int start, int end, int node) {
-        if (start == end) return tree[node] = arr[start];
+    int N;
+    int SEG_N;
+    int[] arr;
+    int[] segTree;
 
-        int mid = (start + end) / 2;
+    SegTree(int n) {
+        N = n;
+        SEG_N = 4 * N;
 
-        return tree[node] = build(start, mid, node * 2) + build(mid + 1, end, node * 2 + 1);
+        arr = new int[N];
+        segTree = new int[SEG_N];
     }
 
-    // start : 기본 배열의 시작 인덱스, end : 기본 배열의 끝 인덱스
-
-    // node : 세그먼트 트리의 인덱스 값
-    // left, right : 기본 배열에서 구간합을 구하고자 하는 범위
-    static int sum(int start, int end, int node, int left, int right) {
-        // 종료조건 : 만약 범위 밖에 있는 경우
-        if (left > end || right < start) return 0;
-        // end <= left && right <= start
-
-        // 범위 안에 있는 경우 - 바로 리턴
-        if (left <= start && end <= right) return tree[node];
-
-        // start <= right < end || start < left <= end; 
-        // 남은 조건 - 세그먼트 트리를 분할하며 합을 찾음
-        int mid = (start + end) / 2;
-        return sum(start, mid, node * 2, left, right) + sum(mid + 1, end, node * 2 + 1, left, right);
+    // 초기화
+    void setArray(int[] data) {
+        System.arraycopy(data, 0, arr, 0, N);
     }
 
-    // start : 기본 배열의 시작 인덱스, end : 기본 배열의 끝 인덱스
-    // index : 구간 합을 수정하고자 하는 노드 (기본 배열의 인덱스 값)
+    /**
+     * arr가 있을 때 재귀로 segtree를 초기화해주는 함수.
+     * @param node - segtree의 인덱스값
+     * @param src - arr의 인덱스 시작 값
+     * @param dst - arr의 인덱스 종료 값
+     */
+    void init(int node, int src, int dst) {
+        if (src == dst) {
+            segTree[node] = arr[src];
+            return;
+        }
 
-    // node : 세그먼트 트리의 idx 값
-    // diff : 수정하고자 하는 값의 차이(수정값 - 원본)
-    static void update(int start, int end, int node, int index, int diff) {
-        // 구간 합을 수정하고자 하는 노드가 세그트리의 인덱스에 들어가있지 않은 경우
-        if (index < start || index > end) return;
+        int mid = (src + dst) / 2;
 
-        // 범위 안에 있으면 구간 합 노드, 리프 노드 가릴 것 없이 갱신
-        tree[node] += diff;
-        if (start == end) return ; // 리프 노드일 때 업데이트 이후 리턴
-        int mid = (start + end) / 2;
+        init(node * 2, src, mid);
+        init(node * 2 + 1, mid + 1, dst);
 
-        update(start, mid, node * 2, index, diff); // 자식 노드 찾기
-        update(mid + 1, end, node * 2 + 1, index, diff);
+        segTree[node] = segTree[node * 2] + segTree[node * 2 + 1];
     }
 
-    public static void main(String[] args) {
-        arr = new int[]{1, 9, 3, 8, 4, 5, 5, 9, 10, 3, 4, 5};
-        tree = new int[arr.length * 4]; // size는 러프하게 4를 곱해서 처리
+    void init() {
+        init(1, 0, N - 1);
+    }
 
-        // end 는 배열의 사이즈가 아님!
-        build(0, arr.length - 1, 1);
-        
-        // left, right 만큼
-        // 1, 2, 3번 값은 고정
-        System.out.println(sum(0, arr.length - 1, 1, 0, arr.length - 1));
+    /**
+     * 특정 인덱스의 값을 업데이트하는 메소드
+     * arr[idx] += value 형태로 값을 증가시킴
+     * 결국, diff값으로 업데이트가 됨.
+     * @param node - segtree의 인덱스값
+     * @param src - arr의 인덱스 시작 값
+     * @param dst - arr의 인덱스 종료 값
+     * @param idx - arr의 업데이트할 배열 인덱스
+     * @param value - 증가시킬 값 (원본 값과의 diff값)
+     */
+    void update(int node, int src, int dst, int idx, int value) {
+        if (src == dst) { // 리프노드에 도달할 경우 - segtree만 업데이트
+            segTree[node] += value;
+            return;
+        }
 
-        // 3 ~ 8까지 합을 구해서 출력
-        System.out.println(sum(0, arr.length - 1, 1, 3, 8));
+        if (idx > dst || idx < src) return; // 기저 조건 : 찾는 범위를 벗어남.
 
-        // 5번 인덱스의 값을 -5만큼 수정 (diff값임!!!)
-        update(0, arr.length  -1, 1, 5, -5);
+        int mid = (src + dst) / 2;
+        update(node * 2, src, mid, idx, value);
+        update(node * 2 + 1, mid + 1, dst, idx, value);
 
-        System.out.println(sum(0, arr.length - 1, 1, 3, 8));
+        // 자식 노드 값을 받아 업데이트.
+        segTree[node] = segTree[node * 2] + segTree[node * 2 + 1];
+    }
+
+    /**
+     * 외부에서 실제로 부를 함수
+     * @param idx - arr의 업데이트할 배열 인덱스
+     * @param value - 증가시킬 값 (원본 값과 diff 값)
+     */
+    void update(int idx, int value) {
+        update(1, 0, N - 1, idx, value);
+    }
+
+    /**
+     * 구간 합 쿼리를 처리하는 메소드
+     * [p, q] 범위의 원소들의 합을 리턴함.
+     * @param node segtree의 현재 노드 인덱스
+     * @param src arr의 시작 인덱스
+     * @param dst arr의 종료 인덱스
+     * @param p arr의 찾아야할 쿼리 시작 인덱스(포함)
+     * @param q arr의 찾아야 할 쿼리 종료 인덱스 (포함)
+     * @return 구간 합
+     */
+    public int query(int node, int src, int dst, int p, int q) {
+        // 범위가 완전 아닐 때
+        if (q < src || p > dst) return 0;
+        // 범위일 때
+        if (p <= src && dst <= q) return segTree[node];
+
+        // 범위가 걸쳐있을 때
+        int mid = (src + dst) / 2;
+        return query(node * 2, src, mid, p, q) + query(node * 2 + 1, mid + 1, dst, p, q);
+    }
+
+    /**
+     * 외부에서 실제로 부를 함수
+     * @param p - arr의 시작 인덱스(포함)
+     * @param q - arr의 끝 인덱스 (포함)
+     * @return 구간 합
+     */
+    public int query(int p, int q) {
+        return query(1, 0, N - 1, p, q);
+    }
+
+    void printArray() {
+        System.out.print("Original Array: ");
+        for (int i = 0; i < N; i++) {
+            System.out.print(arr[i] + " ");
+        }
+        System.out.println();
     }
 }
