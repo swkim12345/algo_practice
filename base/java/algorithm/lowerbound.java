@@ -16,7 +16,7 @@ public class Lowerbound {
         while (min < max) {
             int mid = (min + max) / 2;
 
-            if (value > list.get(mid)) {
+            if (list.get(mid) < value) {
                 min = mid + 1;
             } else {
                 max = mid;
